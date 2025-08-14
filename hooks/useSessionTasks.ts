@@ -1,4 +1,5 @@
-import { useEffect, useState } from "react";
+// hooks/useSessionTasks.ts
+import { useEffect, useState, useCallback, useMemo } from "react";
 
 export type Task = {
   id: string;
@@ -8,41 +9,54 @@ export type Task = {
 
 const STORAGE_KEY = "tasks";
 
-export default function useSessionTasks() {
+export function useSessionTasks() {
   const [tasks, setTasks] = useState<Task[]>([]);
 
-  // Load from sessionStorage on mount
+  // Load tasks from sessionStorage on mount
   useEffect(() => {
     const storedTasks = sessionStorage.getItem(STORAGE_KEY);
     if (storedTasks) {
       try {
         const parsed = JSON.parse(storedTasks);
-        if (Array.isArray(parsed)) {
-          setTasks(parsed);
-        }
+        if (Array.isArray(parsed)) setTasks(parsed);
       } catch (e) {
         console.error("Failed to parse tasks from sessionStorage", e);
       }
     }
   }, []);
 
-  // Save to sessionStorage when tasks change
+  // Persist tasks to sessionStorage on change
   useEffect(() => {
     sessionStorage.setItem(STORAGE_KEY, JSON.stringify(tasks));
   }, [tasks]);
 
-  const addTask = (task: Task) => {
+  // Add a new task
+  const addTask = useCallback((task: Task) => {
     setTasks((prev) => [...prev, task]);
-  };
+  }, []);
 
-  const deleteTask = (taskId: string) => {
+  // Delete a task by ID
+  const deleteTask = useCallback((taskId: string) => {
     setTasks((prev) => prev.filter((task) => task.id !== taskId));
-  };
+  }, []);
 
-  const filteredTasks = (filterDate: string) => {
-    if (!filterDate) return tasks;
-    return tasks.filter((task) => task.date === filterDate);
-  };
+  // Filter tasks by date
+  const filteredTasks = useCallback(
+    (filterDate: string) => {
+      if (!filterDate) return tasks;
+      return tasks.filter((task) => task.date === filterDate);
+    },
+    [tasks]
+  );
 
-  return { tasks, addTask, deleteTask, filteredTasks };
+  // Memoized value for filtered tasks to optimize re-renders
+  const memoFilteredTasks = useMemo(() => filteredTasks(""), [tasks]);
+
+  return {
+    tasks,
+    addTask,
+    deleteTask,
+    filteredTasks,
+    memoFilteredTasks,
+  };
 }

@@ -1,18 +1,11 @@
-import { useTaskContext } from "@/context/TaskContext";
-import { useMemo } from "react";
+import { useFilteredTasks } from "@/hooks/useFilteredTasks";
 
 type Props = {
   filterDate: string;
 };
 
 export default function TaskList({ filterDate }: Props) {
-  const { tasks } = useTaskContext();
-
-  const filteredTasks = useMemo(() => {
-    return filterDate
-      ? tasks.filter((task) => task.date === filterDate)
-      : tasks;
-  }, [tasks, filterDate]);
+  const filteredTasks = useFilteredTasks(filterDate);
 
   if (filteredTasks.length === 0) {
     return (

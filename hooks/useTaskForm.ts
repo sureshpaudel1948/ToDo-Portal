@@ -10,9 +10,9 @@ export function useTaskForm() {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!title || !date) return;
+    if (!title.trim() || !date) return;
 
-    const newTask: Task = { id: uuidv4(), title, date };
+    const newTask: Task = { id: uuidv4(), title: title.trim(), date };
     addTask(newTask);
     setTitle("");
     setDate("");

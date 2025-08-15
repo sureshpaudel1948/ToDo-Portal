@@ -3,10 +3,12 @@ import Card from "@/components/ui/Card";
 
 type Props = {
   filterDate: string;
+  searchKeyword: string;
+  sortOrder: "asc" | "desc";
 };
 
-export default function TaskList({ filterDate }: Props) {
-  const filteredTasks = useFilteredTasks(filterDate);
+export default function TaskList({ filterDate, searchKeyword, sortOrder }: Props) {
+  const filteredTasks = useFilteredTasks(filterDate, searchKeyword, sortOrder );
 
   const today = new Date().toISOString().split("T")[0]; // YYYY-MM-DD
 

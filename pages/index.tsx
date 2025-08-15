@@ -1,12 +1,15 @@
 import TaskForm from "@/components/tasks/TaskForm";
 import TaskList from "@/components/tasks/TaskList";
-import DateFilter from "@/components/date/DateFilter";
+import DateFilter from "@/components/filter/DateFilter";
+import SearchAndSort from "@/components/filter/SearchAndSort";
 import { TaskProvider } from "@/context/TaskContext";
 import { useState } from "react";
 import ThemeToggle from "@/components/ui/ThemeToggle";
 
 export default function Home() {
   const [filterDate, setFilterDate] = useState("");
+  const [searchKeyword, setSearchKeyword] = useState("");
+  const [sortOrder, setSortOrder] = useState<"asc" | "desc">("asc");
 
   return (
     <TaskProvider>
@@ -24,6 +27,16 @@ export default function Home() {
             <TaskForm />
           </div>
 
+          {/* Search + Sort */}
+          <div className="border-t pt-4 border-gray-200 dark:border-gray-700 transition-colors">
+            <SearchAndSort
+              searchKeyword={searchKeyword}
+              onSearchChange={setSearchKeyword}
+              sortOrder={sortOrder}
+              onSortChange={setSortOrder}
+            />
+          </div>
+
           {/* Date Filter */}
           <div className="border-t pt-4 border-gray-200 dark:border-gray-700 transition-colors">
             <DateFilter selectedDate={filterDate} onDateChange={setFilterDate} />
@@ -31,8 +44,13 @@ export default function Home() {
 
           {/* Task List */}
           <div className="border-t pt-4 border-gray-200 dark:border-gray-700 transition-colors">
-            <TaskList filterDate={filterDate} />
+            <TaskList
+              filterDate={filterDate}
+              searchKeyword={searchKeyword}
+              sortOrder={sortOrder}
+            />
           </div>
+
         </section>
       </main>
     </TaskProvider>
